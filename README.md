@@ -1,4 +1,4 @@
-# Three-ECU CAN-Based Automotive Dashboard
+# CAN-Based Automotive Dashboard
 
 ![Embedded Systems](https://img.shields.io/badge/Domain-Embedded%20Systems-blue)
 ![Language](https://img.shields.io/badge/Language-Embedded%20C-green)
