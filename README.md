@@ -1,121 +1,369 @@
-# CAN-Based Automotive Dashboard
+# 🚗 CAN-BASED AUTOMOTIVE DASHBOARD
 
-![Embedded Systems](https://img.shields.io/badge/Domain-Embedded%20Systems-blue)
-![Language](https://img.shields.io/badge/Language-Embedded%20C-green)
-![Microcontroller](https://img.shields.io/badge/MCU-PIC18F4580-orange)
-![Protocol](https://img.shields.io/badge/Protocol-CAN-red)
+### Multi-ECU Communication | Embedded Firmware | Automotive Systems
 
-## Project Overview
+<div align="center">
 
-This project demonstrates a distributed automotive dashboard system using three PIC18F4580 microcontrollers communicating through the Controller Area Network (CAN) protocol.
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=22&duration=2500&pause=800&color=00F5A0&center=true&vCenter=true&width=800&lines=3+ECUs+%7C+1+CAN+Network;Automotive+Embedded+Systems;Real-Time+CAN+Communication;Designed+with+Embedded+C;Engineering+Software+That+Talks+to+Hardware" />
 
-Each ECU performs a dedicated function, processes input data, and communicates with the dashboard controller through CAN messages. The receiving ECU processes the messages and updates the character LCD and indicator LEDs.
+<br/>
 
-The project was developed using Embedded C and MPLAB X IDE with the XC8 compiler as an embedded systems simulation project.
+<img src="https://img.shields.io/badge/Language-Embedded%20C-00599C?style=for-the-badge&logo=c"/>
+<img src="https://img.shields.io/badge/Controller-PIC18-168B70?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Protocol-CAN%20Bus-00A98F?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/IDE-MPLAB%20X-3949AB?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Compiler-XC8-orange?style=for-the-badge"/>
 
-## System Architecture
+**PURUSHOTHAMA K | EMBEDDED SOFTWARE ENGINEER ASPIRANT**
 
-The system consists of three independent ECUs connected through a CAN communication network.
+</div>
 
-### ECU1 – Vehicle Input Processing
-- Reads vehicle speed using ADC.
-- Detects gear selection through a matrix keypad.
-- Transmits speed and gear information through CAN.
+---
 
-### ECU2 – Engine and Indicator Processing
-- Reads engine RPM using ADC.
-- Detects indicator selection using a digital keypad.
-- Transmits RPM and indicator status through CAN.
+## `01 / PROJECT INTRODUCTION`
 
-### ECU3 – Dashboard Display Controller
-- Receives CAN messages from the network.
-- Identifies messages using CAN identifiers.
-- Displays speed, gear and RPM information on the character LCD.
-- Controls left and right indicator LEDs.
-- Uses Timer0 interrupt functionality for indicator blinking.
+### Connecting Multiple ECUs Through CAN Communication
 
-## CAN Message Identifiers
+An automotive instrument cluster simulation developed using three independent PIC18 microcontroller-based Electronic Control Units (ECUs).
 
-| Parameter | CAN ID |
-|---|---|
-| Speed | 0x10 |
-| Gear | 0x20 |
-| RPM | 0x30 |
-| Engine Temperature | 0x40 |
-| Indicator | 0x50 |
+The system demonstrates how multiple embedded controllers exchange vehicle information over a shared Controller Area Network (CAN) bus.
 
-Note: Engine temperature has a reserved message identifier, but its processing is not yet implemented in the current source code.
+Each ECU performs a dedicated operation, while the dashboard ECU receives and processes messages to display vehicle information through a 16×2 LCD, indicator LEDs and a warning buzzer.
 
-## Technologies Used
+**The engineering objective:** Build a distributed embedded system that demonstrates sensor interfacing, CAN communication, message processing and real-time output control.
 
-- Embedded C
-- PIC18F4580 Microcontroller
-- CAN Communication Protocol
-- ADC
-- Matrix Keypad
-- Digital Keypad
-- Character LCD
-- UART
-- Timer0 and Interrupts
-- MPLAB X IDE
-- XC8 Compiler
+### Key System Capabilities
 
-## Repository Structure
+- Vehicle speed acquisition using ADC.
+- Gear selection through digital keypad.
+- Engine RPM acquisition using ADC.
+- Turn indicator input processing.
+- CAN-based communication between three ECUs.
+- Dashboard information display.
+- Reverse gear warning through a buzzer.
+
+---
+
+## `02 / SYSTEM ARCHITECTURE`
+
+### Distributed Three-ECU Architecture
 
 ```text
-CAN-Based-Automotive-Dashboard/
+ ┌────────────────────┐
+ │       ECU 1        │
+ │                    │
+ │  Speed Acquisition │
+ │  Gear Selection    │
+ │                    │
+ │  CAN TRANSMITTER   │
+ └──────────┬─────────┘
+            │
+            │
+ ═══════════╪═══════════════
+            │
+         CAN BUS
+            │
+ ═══════════╪═══════════════
+            │
+ ┌──────────┴─────────┐
+ │       ECU 2        │
+ │                    │
+ │  RPM Acquisition   │
+ │  Turn Indicators   │
+ │                    │
+ │  CAN TRANSMITTER   │
+ └──────────┬─────────┘
+            │
+            │ CAN MESSAGES
+            ▼
+ ┌────────────────────┐
+ │       ECU 3        │
+ │                    │
+ │  CAN RECEIVER      │
+ │  Message Handler   │
+ │                    │
+ │  ┌──────────────┐  │
+ │  │ 16x2 LCD     │  │
+ │  │ Indicator LED│  │
+ │  │ Warning Buzzer│ │
+ │  └──────────────┘  │
+ └────────────────────┘
+```
+
+### ECU Functional Responsibilities
+
+| Controller | Function | Main Operations |
+|---|---|---|
+| ECU1 | Speed and gear | ADC, keypad, CAN TX |
+| ECU2 | RPM and indicators | ADC, keypad, CAN TX |
+| ECU3 | Dashboard | CAN RX, LCD, LEDs, buzzer |
+
+---
+
+## `03 / HOW THE SYSTEM WORKS`
+
+### End-to-End Data Flow
+
+**STEP 01 — INPUT ACQUISITION**
+
+ECU1 reads the speed input and gear selection. ECU2 reads the RPM input and turn indicator selection.
+
+**STEP 02 — DATA PROCESSING**
+
+The respective controllers process the acquired analog and digital inputs.
+
+**STEP 03 — CAN FRAME GENERATION**
+
+Each transmitting ECU prepares CAN messages using dedicated standard identifiers and corresponding data.
+
+**STEP 04 — NETWORK COMMUNICATION**
+
+The messages are transmitted through the shared CAN network.
+
+**STEP 05 — MESSAGE DECODING**
+
+ECU3 receives the messages and identifies their purpose using CAN message identifiers.
+
+**STEP 06 — DASHBOARD UPDATE**
+
+The dashboard updates the LCD, turn indicator LEDs and warning buzzer according to the received information.
+
+---
+
+## `04 / CAN COMMUNICATION MATRIX`
+
+### Message Identification and Routing
+
+| Parameter | CAN ID | Transmitter | Receiver |
+|---|---|---|---|
+| Vehicle Speed | `0x10` | ECU1 | ECU3 |
+| Gear Position | `0x20` | ECU1 | ECU3 |
+| Engine RPM | `0x30` | ECU2 | ECU3 |
+| Engine Temperature | `0x40` | Reserved | Not implemented |
+| Turn Indicator | `0x50` | ECU2 | ECU3 |
+
+**Communication characteristics**
+
+- Standard 11-bit CAN identifiers.
+- Dedicated identifiers for individual signals.
+- Distributed message transmission.
+- Centralized dashboard message processing.
+
+---
+
+## `05 / HARDWARE INTEGRATION`
+
+| Hardware | Function |
+|---|---|
+| PIC18 Microcontrollers | ECU processing |
+| CAN Transceiver | Physical CAN interface |
+| Potentiometers | Speed and RPM simulation |
+| Digital Keypad | Gear and indicator selection |
+| 16×2 Character LCD | Dashboard display |
+| LEDs | Turn signal indication |
+| Buzzer | Reverse gear warning |
+| 120Ω Termination | CAN bus termination |
+
+### CAN Network Connection
+
+```text
+PIC18 MCU                CAN TRANSCEIVER
+─────────                ────────────────
+CAN TX  ───────────────► TXD
+CAN RX  ◄─────────────── RXD
+                            │
+                            ├──── CAN_H
+                            │
+                            └──── CAN_L
+
+ECU1 ───────────────┐
+                    ├──── Shared CAN Network
+ECU2 ───────────────┤
+                    │
+ECU3 ───────────────┘
+```
+
+Each ECU requires its own compatible CAN transceiver. The physical network requires 120Ω termination at its two ends.
+
+---
+
+## `06 / FIRMWARE ARCHITECTURE`
+
+### Modular Embedded C Development
+
+The firmware is organized into separate ECU applications and peripheral drivers.
+
+| Firmware Module | Responsibility |
+|---|---|
+| `main.c` | Application execution |
+| `can.c / can.h` | CAN initialization and communication |
+| `adc.c / adc.h` | Analog input acquisition |
+| `sensor.c` | Sensor processing |
+| `digital_keypad.c` | Keypad scanning |
+| `msg_handler.c` | CAN message processing |
+| `clcd.c / clcd.h` | LCD interfacing |
+| `timer0.c / timer0.h` | Timer configuration |
+| `isr.c / isr.h` | Interrupt handling |
+| `uart.c / uart.h` | Serial debugging support |
+
+### Software Execution Flow
+
+```text
+             SYSTEM INITIALIZATION
+                      |
+                      ▼
+             PERIPHERAL SETUP
+                      |
+                      ▼
+              INPUT ACQUISITION
+                      |
+                      ▼
+             CAN FRAME CREATION
+                      |
+                      ▼
+               CAN TRANSMISSION
+                      |
+                      ▼
+              CAN MESSAGE RECEIVE
+                      |
+                      ▼
+               MESSAGE DECODING
+                      |
+                      ▼
+               OUTPUT CONTROL
+                      |
+              ┌───────┼────────┐
+              ▼       ▼        ▼
+             LCD     LEDs    BUZZER
+```
+
+---
+
+## `07 / DEVELOPMENT ENVIRONMENT`
+
+| Category | Technology |
+|---|---|
+| Programming | Embedded C |
+| Microcontroller | PIC18 Series |
+| Communication | CAN / ECAN |
+| IDE | MPLAB X IDE |
+| Compiler | Microchip XC8 |
+| Peripheral Interfaces | ADC, GPIO, LCD |
+| Timing | Timer0 and Interrupts |
+
+---
+
+## `08 / PROJECT STRUCTURE`
+
+```text
+CAN-Based-Automotive_Dashboard/
 │
-├── ECU1.X/
+├── ECU1/
 │   ├── main.c
-│   ├── adc.c / adc.h
-│   ├── can.c / can.h
-│   ├── clcd.c / clcd.h
-│   └── other source files
+│   ├── can.c
+│   ├── can.h
+│   ├── adc.c
+│   ├── adc.h
+│   ├── sensor.c
+│   ├── digital_keypad.c
+│   └── msg_id.h
 │
-├── ECU2.X/
+├── ECU2/
 │   ├── main.c
-│   ├── adc.c / adc.h
-│   ├── can.c / can.h
-│   ├── digital_keypad.c / .h
-│   └── other source files
+│   ├── can.c
+│   ├── can.h
+│   ├── adc.c
+│   ├── sensor.c
+│   ├── digital_keypad.c
+│   └── msg_id.h
 │
-├── ECU3.X/
+├── ECU3/
 │   ├── main.c
-│   ├── can.c / can.h
-│   ├── message_handler.c / .h
-│   ├── timer0.c / .h
-│   └── other source files
-│
-├── Documentation/
-│   └── three_ecu_can_architecture.png
+│   ├── can.c
+│   ├── msg_handler.c
+│   ├── clcd.c
+│   ├── timer0.c
+│   ├── isr.c
+│   └── msg_id.h
 │
 └── README.md
 ```
 
-## Development Environment
+*The structure above is a guide. The uploaded repository should reflect the actual files.*
+
+---
+
+## `09 / BUILD AND EXECUTION`
+
+### Prerequisites
 
 - MPLAB X IDE
 - XC8 Compiler
-- PIC18F4580 device support
+- Compatible PIC18 development boards
+- CAN transceivers
+- CAN bus termination resistors
+- PICkit programmer or compatible debugger
 
-## Key Learning Outcomes
+### Execution Steps
 
-- Understanding distributed embedded systems.
-- Implementing CAN message transmission and reception.
-- Working with ADC and keypad interfacing.
-- Developing modular Embedded C programs.
-- Handling interrupts and timer functionality.
-- Understanding communication between multiple microcontrollers.
+1. Open the individual ECU projects in MPLAB X.
+2. Select the correct target microcontroller.
+3. Configure the XC8 compiler.
+4. Build the firmware for each ECU.
+5. Program the respective microcontrollers.
+6. Connect the nodes through the shared CAN network.
+7. Power up the system and observe dashboard operation.
 
-## Future Improvements
+---
 
-- Implement engine temperature monitoring.
-- Improve CAN error handling and message validation.
-- Add communication failure detection.
-- Extend dashboard functionality.
+## `10 / ENGINEERING CONCEPTS DEMONSTRATED`
 
-## Author
+- CAN protocol and message identifiers.
+- ADC-based sensor interfacing.
+- Digital input and output control.
+- LCD interfacing.
+- Timer configuration.
+- Interrupt handling.
+- Modular firmware development.
+- Distributed microcontroller communication.
 
-**Purushothama K**
+---
 
-Embedded Software Engineer | Embedded C | Microcontrollers | CAN Communication
+## `11 / FUTURE DEVELOPMENT`
+
+- [ ] Add actual engine temperature sensing.
+- [ ] Implement CAN acceptance filtering.
+- [ ] Introduce UART-based debugging.
+- [ ] Add CAN bus fault monitoring.
+- [ ] Improve error handling and diagnostics.
+- [ ] Extend the dashboard with additional automotive parameters.
+
+---
+
+## `12 / ABOUT THE DEVELOPER`
+
+<div align="center">
+
+### PURUSHOTHAMA K
+
+**Embedded Systems | Embedded C | Firmware Development**
+
+Electrical and Electronics Engineering Graduate
+
+Focused on developing embedded applications, understanding microcontroller peripherals and building practical hardware-software solutions.
+
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github)](https://github.com/kpurushothama446-droid)
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](YOUR_LINKEDIN_URL)
+
+</div>
+
+---
+
+<div align="center">
+
+### ENGINEERING IS WHERE SOFTWARE MEETS HARDWARE.
+
+**DESIGN • DEVELOP • DEBUG • BUILD**
+
+</div>
