@@ -1,5 +1,2 @@
-# Project Documentation
-
-This folder contains the architecture diagram
-and technical documentation of the
-Three-ECU CAN-Based Automotive Dashboard.
+## System Architecture
+![Three ECU CAN Architecture](Documentation/three_ecu_can_architecture.png)
